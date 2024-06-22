@@ -82,7 +82,10 @@ export const getUserInfo = async (req, res, next) => {
         },
       });
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal Server Error");
+  }
 };
 
 export const setUserInfo = async (req, res, next) => {
