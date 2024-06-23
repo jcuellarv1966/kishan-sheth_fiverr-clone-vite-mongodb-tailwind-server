@@ -1,5 +1,6 @@
 import { genSalt, hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
+import { renameSync } from "fs";
 import User from "../models/user.model.js";
 
 const generatePassword = async (password) => {
@@ -90,10 +91,51 @@ export const getUserInfo = async (req, res, next) => {
 
 export const setUserInfo = async (req, res, next) => {
   try {
-  } catch (error) {}
+    if (req?.userId) {
+      const { userName, fullName, description } = req.body;
+      if (userName && fullName && description) {
+
+        await User.findByIdAndUpdate(
+          { _id: req.userId },
+          {
+            username: userName,
+            fullName,
+            description,
+            isProfileInfoSet: true,
+          }
+        );
+        return res.status(200).send("Profile data updated successfully.");
+      } else {
+        return res
+          .status(400)
+          .send("Username, Full Name and description should be included.");
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal Server Error");
+  }
 };
 
 export const setUserImage = async (req, res, next) => {
   try {
-  } catch (error) {}
+    if (req.file) {
+      if (req?.userId) {
+        const date = Date.now();
+        let fileName = "uploads/profiles/" + date + req.file.originalname;
+        renameSync(req.file.path, fileName);
+
+        await User.findByIdAndUpdate(
+          { _id: req.userId },
+          { profileImage: fileName }
+        );
+        return res.status(200).json({ img: fileName });
+      }
+      return res.status(400).send("Cookie Error.");
+    }
+    return res.status(400).send("Image not inclued.");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal Server Error");
+  }
 };
