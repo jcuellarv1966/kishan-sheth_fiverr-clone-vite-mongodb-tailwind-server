@@ -6,6 +6,7 @@ import {
   getUserInfo,
   setUserInfo,
   setUserImage,
+  deleteUserImage,
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middlewares/AuthMiddleware.js";
 
@@ -22,5 +23,6 @@ router.post(
   upload.single("images"),
   setUserImage
 );
+router.post("/delete-user-image", verifyToken, deleteUserImage);
 
 export default router;

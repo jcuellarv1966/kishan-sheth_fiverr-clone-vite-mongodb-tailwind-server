@@ -1,6 +1,6 @@
 import { genSalt, hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
-import { renameSync } from "fs";
+import fs, { renameSync } from "fs";
 import User from "../models/user.model.js";
 
 const generatePassword = async (password) => {
@@ -94,7 +94,6 @@ export const setUserInfo = async (req, res, next) => {
     if (req?.userId) {
       const { userName, fullName, description } = req.body;
       if (userName && fullName && description) {
-
         await User.findByIdAndUpdate(
           { _id: req.userId },
           {
@@ -119,10 +118,10 @@ export const setUserInfo = async (req, res, next) => {
 
 export const setUserImage = async (req, res, next) => {
   try {
-    if (req.file) {
+    if (req.file && req.file.originalname !== null) {
       if (req?.userId) {
         const date = Date.now();
-        let fileName = "uploads/profiles/" + date + req.file.originalname;
+        let fileName = "uploads/profiles/" + req.file.originalname;
         renameSync(req.file.path, fileName);
 
         await User.findByIdAndUpdate(
@@ -133,7 +132,25 @@ export const setUserImage = async (req, res, next) => {
       }
       return res.status(400).send("Cookie Error.");
     }
-    return res.status(400).send("Image not inclued.");
+    return res.status(400).send("Image not included.");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+export const deleteUserImage = (req, res, next) => {
+  try {
+    if (req.body.imageDelete) {
+      if (req?.userId) {
+        const { imageDelete } = req.body;
+        let fileName = "uploads/profiles/" + imageDelete;
+        fs.unlink(fileName, (err) => { console.log(err) });
+        return res.status(200).send("Image has been erased !!!");
+      }
+      return res.status(400).send("Cookie Error.");
+    }
+    return res.status(400).send("Image not included.");
   } catch (error) {
     console.log(error);
     return res.status(500).send("Internal Server Error");
