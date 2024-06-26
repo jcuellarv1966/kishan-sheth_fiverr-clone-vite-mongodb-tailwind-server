@@ -63,3 +63,16 @@ export const addGig = async (req, res, next) => {
     return res.status(500).send("Internal Server Error");
   }
 };
+
+export const getUserAuthGigs = async (req, res, next) => {
+  try {
+    if (req?.userId) {
+      const gigs = await Gig.find({ createdBy: req.userId });
+      return res.status(200).send(gigs);
+    }
+    return res.status(400).send("UserId should be required.");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
