@@ -28,6 +28,18 @@ export const addGig = async (req, res, next) => {
             shortDesc,
           } = req.query;
 
+          if (
+            !title ||
+            !description ||
+            !category ||
+            !features ||
+            !price ||
+            !revisions ||
+            !time ||
+            !shortDesc
+          )
+            return res.status(400).send("Not enough data to create a Gig ...");
+
           await Gig.create({
             title,
             description,
@@ -43,7 +55,7 @@ export const addGig = async (req, res, next) => {
           return res.status(201).send("Successfully created the gig.");
         }
       }
-      return res.status(400).send("All properties should be required.");
+      return res.status(400).send("All data fields should be required!!!");
     }
     return res.status(400).send("Cookie Error.");
   } catch (error) {
