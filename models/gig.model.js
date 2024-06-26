@@ -3,16 +3,16 @@ const { Schema } = mongoose;
 
 const GigSchema = new Schema(
   {
-    title: { type: String, required: true, unique: true },
+    title: { type: String, required: false, unique: false },
     description: { type: String },
     category: { type: String },
     deliveryTime: { type: Number },
     revisions: { type: Number },
-    features: { type: [String], required: true },
+    features: { type: [String], required: false },
     price: { type: Number },
     shortDesc: { type: String },
     images: { type: [String], required: false },
-    userId: { type: String, required: true },
+    createdBy: { type: String, required: false },
   },
   {
     timestamps: true,

@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import authRoutes from "./routes/auth.route.js";
+import gigRoutes from "./routes/gig.routes.js";
 
 const app = express();
 dotenv.config();
@@ -28,6 +29,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/uploads/profiles", express.static("uploads/profiles"));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/gigs", gigRoutes);
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
