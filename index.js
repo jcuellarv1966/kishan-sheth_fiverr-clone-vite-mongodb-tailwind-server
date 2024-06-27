@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from 'url';
 
 import authRoutes from "./routes/auth.route.js";
 import gigRoutes from "./routes/gig.routes.js";
@@ -27,6 +29,12 @@ app.use(cookieParser());
 
 app.use("/uploads", express.static("uploads"));
 app.use("/uploads/profiles", express.static("uploads/profiles"));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use("/public/uploads", express.static(path.join(__dirname, "./uploads")));
+app.use("/public/uploads/profiles", express.static(path.join(__dirname, "./uploads/profiles")));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/gigs", gigRoutes);
