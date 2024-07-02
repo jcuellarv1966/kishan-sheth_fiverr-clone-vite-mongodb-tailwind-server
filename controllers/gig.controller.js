@@ -77,9 +77,23 @@ export const getUserAuthGigs = async (req, res, next) => {
   }
 };
 
+export const getGigData = async (req, res, next) => {
+  try {
+    if (req.params.gigId) {
+      const gig = await Gig.findOne({ _id: req.params.gigId });
+
+      return res.status(200).json(gig);
+    }
+    return res.status(400).send("GigId should be required.");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
 export const deleteGig = async (req, res, next) => {
   try {
-    const gig = await Gig.findById(req.params.id);
+    const gig = await Gig.findById(req.params.gigId);
     if (gig.createdBy !== req.userId)
       return res.status(400).send("Only you can delete your gig!");
 
@@ -91,7 +105,7 @@ export const deleteGig = async (req, res, next) => {
         });
       }
     }
-    await Gig.findByIdAndDelete(req.params.id);
+    await Gig.findByIdAndDelete(req.params.gigId);
     res.status(200).send("Gig has been deleted!");
   } catch (error) {
     console.log(error);
