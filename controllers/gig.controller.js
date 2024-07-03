@@ -91,6 +91,62 @@ export const getGigData = async (req, res, next) => {
   }
 };
 
+export const editGig = async (req, res, next) => {
+  try {
+    if (req?.userId) {
+      if (req.files) {
+        const fileKeys = Object.keys(req.files);
+        const fileNames = [];
+        fileKeys.forEach((file) => {
+          const date = Date.now();
+          renameSync(
+            req.files[file].path,
+            "uploads/" + date + req.files[file].originalname
+          );
+          fileNames.push(date + req.files[file].originalname);
+        });
+
+        if (req.query) {
+          const {
+            title,
+            description,
+            category,
+            features,
+            price,
+            revisions,
+            time,
+            shortDesc,
+          } = req.query;
+          const oldData = await Gig.findOne({ _id: req.params.gigId });
+
+          await Gig.findOneAndUpdate(
+            { _id: req.params.gigId },
+            {
+              title,
+              description,
+              deliveryTime: parseInt(time),
+              category,
+              features,
+              price: parseInt(price),
+              shortDesc,
+              revisions: parseInt(revisions),
+              createdBy: req.userId,
+              images: fileNames,
+            }
+          );
+          oldData?.images.forEach((image) => {
+            if (existsSync(`uploads/${image}`)) unlinkSync(`uploads/${image}`);
+          });
+
+          return res.status(201).send("Successfully edited the Gig.");
+        }
+      }
+      return res.status(400).send("All data fields should be required!!!");
+    }
+    return res.status(400).send("Cookie Error.");
+  } catch (error) {}
+};
+
 export const deleteGig = async (req, res, next) => {
   try {
     const gig = await Gig.findById(req.params.gigId);
